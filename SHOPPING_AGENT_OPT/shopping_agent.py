@@ -15,7 +15,6 @@ from langchain_groq import ChatGroq
 from reviews_api import get_ratings_for_products
 
 
-os.environ["LANGCHAIN_PROJECT"] = "Shopping_agent"
 
 load_dotenv()
 
