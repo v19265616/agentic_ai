@@ -50,7 +50,7 @@ def run_live_agent(inputs: dict) -> dict:
                 "[data-testid='stChatMessage']"
             )
 
-            answer = messages.last.inner_text()
+            answer = messages.last.locator("[data-testid='stMarkdownContainer']").inner_text()
 
             return {"answer": answer}
 
