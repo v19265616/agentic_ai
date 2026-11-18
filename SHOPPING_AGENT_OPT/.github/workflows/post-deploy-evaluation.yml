@@ -1,0 +1,32 @@
+
+name: Evaluate Live Railway Shopping Agent
+
+on:
+  deployment_status:
+
+jobs:
+  evaluate:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install langsmith playwright
+          playwright install --with-deps chromium
+
+      - name: Evaluate deployed chatbot
+        env:
+          RAILWAY_APP_URL: ${{ secrets.RAILWAY_APP_URL }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_ENDPOINT: https://api.smith.langchain.com
+          LANGSMITH_PROJECT: Shopping_Agent_Trace
+        run: python evaluate_live.py
