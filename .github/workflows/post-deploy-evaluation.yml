@@ -1,11 +1,13 @@
+
 name: Evaluate Live Railway Shopping Agent
 
 on:
   deployment_status:
+  workflow_dispatch:
 
 jobs:
   evaluate:
-    if: github.event.deployment_status.state == 'success'
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
