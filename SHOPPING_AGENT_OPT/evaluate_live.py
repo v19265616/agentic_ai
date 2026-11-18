@@ -24,35 +24,40 @@ def run_live_agent(inputs: dict) -> dict:
 
             chat_input.fill(question)
             chat_input.press("Enter")
-
-            # Wait until the chatbot displays its answer.
+            # Wait until the actual assistant response replaces "Thinking..."
             page.wait_for_function(
-                """(question) => {
+                """() => {
                     const messages = Array.from(
                         document.querySelectorAll(
                             '[data-testid="stChatMessage"]'
                         )
                     );
-
+            
                     if (messages.length < 2) return false;
-
-                    const lastMessage =
-                        messages[messages.length - 1].innerText.trim();
-
-                    return lastMessage.length > 0 &&
-                           lastMessage !== question;
+            
+                    const lastMessage = messages[messages.length - 1];
+                    const text = lastMessage.innerText.trim();
+            
+                    return (
+                        text.length > 0 &&
+                        !text.includes("Thinking...") &&
+                        !text.includes("smart_toy")
+                    );
                 }""",
-                arg=question,
-                timeout=120000
+                timeout=180000
             )
-
+            
+            # Capture the completed assistant response
             messages = page.locator(
                 "[data-testid='stChatMessage']"
             )
-
-            answer = messages.last.locator("[data-testid='stMarkdownContainer']").inner_text()
-
+            
+            answer = messages.last.locator(
+                "[data-testid='stMarkdownContainer']"
+            ).inner_text()
+            
             return {"answer": answer}
+
 
         finally:
             browser.close()
